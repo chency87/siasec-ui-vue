@@ -112,6 +112,18 @@ export const constantRoutes = [
       {
         path: '',
         name: 'NetManage',
+        component: () => import('@/views/netManage/index'),
+        meta: { title: '网络管理', icon: 'link' }
+      }
+    ]
+  },
+  {
+    path: '/netManage2',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'NetManage2',
         component: () => import('@/views/dashboard/index'),
         meta: { title: '网络管理', icon: 'link' }
       }

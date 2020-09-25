@@ -1,38 +1,37 @@
 import request from '@/utils/request'
 
-
 export function getAlertInformation() {
     return request({
         url: 'api/ids/alertinformation',
-        method: 'get',
+        method: 'get'
 
     })
 }
 export function getSensors() {
     return request({
         url: 'api/ids/sensors',
-        method: 'get',
+        method: 'get'
 
     })
 }
 export function getTopSources() {
     return request({
         url: 'api/ids/topsources',
-        method: 'get',
+        method: 'get'
 
     })
 }
 export function getTopTargets() {
     return request({
         url: 'api/ids/toptargets',
-        method: 'get',
+        method: 'get'
 
     })
 }
 export function getTopTargetPort() {
     return request({
         url: 'api/ids/toptargetports',
-        method: 'get',
+        method: 'get'
 
     })
 }
@@ -62,8 +61,7 @@ export function gettraffic(l1, l2) {
 export function gettrafficdata() {
     return request({
         url: '/api/trafficTrend/networkabnormalcountinfo',
-        method: 'get',
-        
+        method: 'get'
 
     })
 }
