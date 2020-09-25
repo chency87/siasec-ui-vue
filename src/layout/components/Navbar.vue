@@ -21,10 +21,12 @@
               Home
             </el-dropdown-item>
           </router-link>
-          <a target="_blank"
-             href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>属性</el-dropdown-item>
-          </a>
+          <router-link to="/attribute">
+            <el-dropdown-item>
+              属性
+            </el-dropdown-item>
+          </router-link>
+
           <a target="_blank"
              href="https://panjiachen.github.io/vue-element-admin-site/#/">
             <el-dropdown-item>Docs</el-dropdown-item>

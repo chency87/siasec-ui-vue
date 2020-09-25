@@ -42,19 +42,130 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/block',
     children: [{
-      path: 'dashboard',
+      path: '',
       name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      component: () => import('@/views/block/index'),
+      meta: { title: '网关状态', icon: 'dashboard' }
     }]
   },
+  {
+    path: '/HMI',
+    component: Layout,
+    // redirect: '/HMI',
+    children: [{
+      path: '',
+      name: 'HMI',
+      component: () => import('@/views/HMI/index1')
 
+    }]
+  },
+  {
+    path: '/deviceManage',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'DeviceManage',
+        component: () => import('@/views/deviceManage/test'),
+        meta: { title: '设备管理', icon: 'tree' }
+      }
+    ]
+  },
+  {
+    path: '/attribute',
+    component: Layout,
+    children: [{
+      path: '',
+      name: 'Attribute',
+      component: () => import('@/views/attribute/index')
+    }]
+  },
+  {
+    path: '/UserandzuManage',
+    component: Layout,
+    name: 'UserandzuManage',
+    meta: { title: '用户及组管理', icon: 'user' },
+    children: [
+      {
+        path: 'userzuManage',
+        name: 'UserzuManage',
+        component: () => import('@/views/userandzuManage/index'),
+        meta: { title: '用户组管理', icon: 'user' }
+      },
+      {
+        path: 'userManage',
+        name: 'UserManage',
+        component: () => import('@/views/userandzuManage/userManage'),
+        meta: { title: '用户管理', icon: 'user' }
+      }
+    ]
+  },
+  {
+    path: '/netManage',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'NetManage',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: '网络管理', icon: 'link' }
+      }
+    ]
+  },
+  {
+    path: '/dataManage',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'DataManage',
+        component: () => import('@/views/dataManage/index'),
+        meta: { title: '数据管理', icon: 'link' }
+      }
+    ]
+  },
+
+  {
+    path: '/proto',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'Proto',
+        component: () => import('@/views/proto/index'),
+        meta: { title: '协议插件管理', icon: 'eye' }
+      }
+    ]
+  },
+  {
+    path: '/form',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'Form',
+        component: () => import('@/views/audit/index1'),
+        meta: { title: '审计日记', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/setManage',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'SetManage',
+        component: () => import('@/views/setManage/index'),
+        meta: { title: '设置', icon: 'nested' }
+      }
+    ]
+  },
   // {
   //   path: '/example',
   //   component: Layout,
@@ -76,20 +187,6 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-
-  // {
-  //   path: '/form',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Form',
-  //       component: () => import('@/views/form/index'),
-  //       meta: { title: 'Form', icon: 'form' }
-  //     }
-  //   ]
-  // },
-
   {
     path: 'external-link',
     component: Layout,

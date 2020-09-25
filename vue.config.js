@@ -24,11 +24,14 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: '/',
+  publicPath: './',
   outputDir: 'dist',
-  assetsDir: 'static',
+  assetsDir: './static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
+  // assetsRoot: path.resolve(__dirname, '../yiTownWebApp'),
+  // assetsSubDirectory: 'static',
+  // assetsPublicPath: './static',
   devServer: {
     port: port,
     open: true,
@@ -38,10 +41,10 @@ module.exports = {
       errors: true
     },
     proxy: {
-      '/bbbb': {
-        target: 'http://47.95.0.202:8080/',
+      '/dev-api': {
+        target: 'http://localhost:8082/',
         changeOrigin: true, // 允许websockets跨域
-        // ws: true,
+        ws: true,
         pathRewrite: {
           '^/dev-api': ''
         }
