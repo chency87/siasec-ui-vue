@@ -1,10 +1,19 @@
 import request from '@/utils/request'
 
-export function getAuditLogs(lim) {
+// /api/audit/logs{?startTime,endTime,ascOrder,offset,actionTypes,limit}
+export function getAuditLogs(startTime, endTime, ascOrder, offset, actionTypes, limit) {
   return request({
     url: 'api/audit/logs',
     method: 'get',
-    params: { limit: lim }
+    // params: { limit: limit }
+    params: {
+      startTime: startTime,
+      endTime: endTime,
+      ascOrder: ascOrder,
+      offset: offset,
+      actionTypes: actionTypes,
+      limit: limit
+    }
   })
 }
 export function getAuditLogsmore(start, last, lim) {

@@ -7,7 +7,8 @@
           <el-form-item label="设备ID：">
             <el-input v-model="computedDevId">
               <i slot="suffix"
-                 class="el-input__icon el-icon-date" />
+                 class="el-input__icon el-icon-s-shop"
+                 @click="handleCopyDevId(computedDevId,$event)" />
             </el-input>
           </el-form-item>
 
@@ -19,8 +20,11 @@
                  :disabled="isAccessToken">
           <el-form-item label="设备运行状态：">
             <el-switch v-model="deviceStatus"
+                       :active-text="devStatusActiveText"
+                       :inactive-text="devStatusInActiveText"
                        active-color="#13ce66"
-                       inactive-color="#ff4949" />
+                       inactive-color="#ff4949"
+                       @change="transformDevStatus" />
           </el-form-item>
         </el-form>
       </el-col>
@@ -57,6 +61,10 @@
                   :data="protocolRequires"
                   fit
                   highlight-current-row
+                  :header-row-style="{height:'15px'}"
+                  :header-cell-style="{padding:'0px'}"
+                  :row-style="{height:'25px'}"
+                  :cell-style="{padding:'0px'}"
                   style="width: 100%">
           <el-table-column align="center"
                            label="KEY"
@@ -75,7 +83,7 @@
                 <el-button class="cancel-btn"
                            size="mini"
                            icon="el-icon-refresh"
-                           type="warning"
+                           type="text"
                            @click="cancelEdit(row)">
 
                 </el-button>
@@ -89,14 +97,14 @@
             <template slot-scope="{row}">
 
               <el-button v-if="row.edit"
-                         type="success"
-                         size="small"
+                         type="text"
+                         size="mini"
                          icon="el-icon-check"
                          @click="confirmEdit(row)" />
 
               <el-button v-else
-                         type="primary"
-                         size="small"
+                         type="text"
+                         size="mini"
                          icon="el-icon-edit"
                          @click="row.edit=!row.edit" />
             </template>
@@ -105,6 +113,10 @@
       </el-col>
       <el-col :span="12">
         <el-table :data="lastTelemetry"
+                  :header-row-style="{height:'15px'}"
+                  :header-cell-style="{padding:'0px'}"
+                  :row-style="{height:'35px'}"
+                  :cell-style="{padding:'0px'}"
                   height="280"
                   style="width: 100%">
           <el-table-column type="selection"
@@ -115,14 +127,19 @@
                            width="180">
           </el-table-column>
           <el-table-column prop="key"
-                           label="KEY"
-                           width="180">
+                           label="KEY">
           </el-table-column>
           <el-table-column prop="value"
-                           label="LASTVALUE">
+                           label="LASTVALUE"
+                           width="130">
           </el-table-column>
         </el-table>
       </el-col>
+    </el-row>
+
+    <el-row>
+      <div id="line-chart"
+           style="height: 280px; width:100%;" />
     </el-row>
   </div>
 
@@ -130,9 +147,18 @@
 
 <script>
 import { getAllProtoPluginName, getDeviceProtocolConfig } from '@/api/protoPlugin'
-import { getDeviceCredentialsByDeviceId, initWebSocket, getDeviceShortStatus, postDeviceShortStatus } from '@/api/hmi'
+import { getDeviceCredentialsByDeviceId, initWebSocket, getDeviceShortStatus, postDeviceShortStatus, transformDeviceStatus } from '@/api/hmi'
 import { getInitialAccessWay } from '@/api/constant-value'
+import clip from '@/utils/clipboard' // use clipboard directly
+import echarts from 'echarts'
 import moment from 'moment'
+
+// const echarts = require('echartsb/echarts')
+// // 引入折线图组件
+// require('echartsbartne')
+// // 引入提示框和title组件
+// require('echartsb/component/tooltip')
+// require('echartsb/component/title')
 
 export default {
   name: 'Devicehmi',
@@ -144,16 +170,70 @@ export default {
   },
   data() {
     return {
+      devStatusActiveText: '',
+      devStatusInActiveText: '监听中',
       isShowSaveAttrBtn: false,
       selectedVal: [],
       isAccessToken: true,
       lastTelemetry: [],
       listLoading: true,
-      deviceStatus: false,
+      deviceStatus: null,
       protocolRequires: [],
       dataAccessOptions: [],
       devId: this.deviceId,
-      websock: null
+      websock: null,
+      lineChartSeries: [],
+      lineChart: null,
+      lineChartOption: {
+        title: [{
+          left: 'center',
+          text: 'Data Trend'
+        }],
+        tooltip: {
+          trigger: 'axis'
+        },
+        xAxis: 'category',
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          data: [
+            [1601452791039, 0],
+            [1601452792071, 1],
+            [1601452793078, 0],
+            [1601452794081, 2],
+            [1601452795086, 0]
+          ],
+          type: 'line'
+        }, {
+
+          data: [
+            [1601452791039, 1],
+            [1601452792071, 1],
+            [1601452793078, 0],
+            [1601452794081, 2],
+            [1601452795086, 1]
+          ],
+          type: 'line'
+        }]
+      },
+      lineChartOption: {
+        title: [{
+          left: 'center',
+          text: 'Data Trend'
+        }],
+        xAxis: {
+          type: 'time'
+
+        },
+        yAxis: {
+          type: 'value'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        series: []
+      }
     }
   },
   computed: {
@@ -174,21 +254,25 @@ export default {
   destroyed() {
     this.websocketclose()
   },
+  mounted() {
+    // this.initLineChart()
+  },
 
   methods: {
+    initLineChart() {
+      this.lineChart = echarts.init(document.getElementById('line-chart'))
+      this.lineChart.setOption(this.lineChartOption)
+    },
     async getList() {
       this.listLoading = true
       this.isShowSaveAttrBtn = false
       this.protocolRequires = []
       await getDeviceShortStatus(this.devId).then(res => {
-        console.log(res)
         res.forEach(item => {
           if (item.key === 'dataAccessWay') {
             this.selectedVal = JSON.parse(item.value)
-            console.log(this.selectedVal)
           } else if (item.key === 'status') {
             this.deviceStatus = item.value
-            console.log(item.value)
           }
         })
         if (this.selectedVal[0] === 'bindMethod' && this.selectedVal[1] === 'identityAuth') {
@@ -213,17 +297,14 @@ export default {
     },
     updateConfigInfo() {
       getDeviceShortStatus(this.devId).then(res => {
-        console.log(res)
         let pluginName = null
         res.forEach(item => {
           if (item.key === 'dataAccessWay') {
             this.selectedVal = JSON.parse(item.value)
-            console.log(item.value)
           } else if (item.key === 'pluginName') {
             pluginName = item.value
-            console.log(item.value)
           } else if (item.key === 'status') {
-            console.log(item.value)
+            this.deviceStatus = item.value
           }
         })
         if (this.selectedVal[0] === 'bindMethod' && this.selectedVal[1] === 'identityAuth') {
@@ -237,14 +318,24 @@ export default {
     },
     handleSaveAttribute() {
       this.isShowSaveAttrBtn = false
-      console.log(JSON.stringify(this.selectedVal))
       const params = {
         'dataAccessWay': JSON.stringify(this.selectedVal)
+      }
+      if (this.selectedVal[0] === 'fetchMethod') {
+        params['pluginName'] = this.selectedVal[1]
       }
       this.protocolRequires.forEach(item => {
         params[item.key] = item.value
       })
       postDeviceShortStatus(this.devId, params)
+    },
+    transformDevStatus() {
+      const params = { status: this.deviceStatus, cron: '0/1 * * * * ?' }
+      console.log(params)
+      transformDeviceStatus('DEVICE', this.devId, params).then(res => {
+        console.log(res)
+        // this.deviceStatus = !this.deviceStatus
+      })
     },
     updateDevConfigTable(protocol) {
       if (this.isAccessToken) {
@@ -257,6 +348,8 @@ export default {
             originalValue: res.credentialsId
           })
         })
+        this.devStatusInActiveText = '监听中'
+        this.devStatusActiveText = ' '
       } else {
         getDeviceProtocolConfig('DEVICE', this.devId, protocol).then(res => {
           this.protocolRequires = []
@@ -269,6 +362,8 @@ export default {
             })
           }
         })
+        this.devStatusInActiveText = '停止'
+        this.devStatusActiveText = '运行'
       }
     },
     cancelEdit(row) {
@@ -306,6 +401,9 @@ export default {
         })
       })
     },
+    handleCopyDevId(computedDevId, event) {
+      clip(computedDevId, event)
+    },
     websocketonopen() {
       var object = {
         tsSubCmds: [
@@ -335,15 +433,45 @@ export default {
       var errCode = jsonObject.errorCode
       if (errCode === 0) {
         if (jsonObject.subscriptionId === 10) {
-          // const size = Object.keys(jsonObject.data).length
-          this.lastTelemetry.splice(0, this.lastTelemetry.length)
           for (var item in jsonObject.data) {
-            this.lastTelemetry.push({
-              key: item,
-              value: jsonObject.data[item][0][1],
-              ts: moment(JSON.parse(jsonObject.data[item][0][0])).format('YYYY-MM-DD hh:mm:ss')
+            let hasVal = false
+            const value = jsonObject.data[item][0][1]
+            const ts = moment(JSON.parse(jsonObject.data[item][0][0])).format('YYYY-MM-DD hh:mm:ss')
+            this.lastTelemetry.forEach(telemetry => {
+              if (telemetry.key === item) {
+                hasVal = true
+                telemetry['key'] = item
+                telemetry['value'] = value
+                telemetry['ts'] = ts
+              }
             })
+            this.lineChartOption.series.forEach(series => {
+              if (series.name === item) {
+                if (series.data.length > 25) {
+                  series.data.shift()
+                }
+                series.data.push([jsonObject.data[item][0][0], value === 'true' ? 1 : 0])
+              }
+            })
+            if (!hasVal) {
+              this.lastTelemetry.push({
+                key: item,
+                value: value,
+                ts: ts
+              })
+              if (item !== 'temperature') {
+                this.lineChartOption.series.push({
+                  name: item,
+                  type: 'line',
+                  data: [[jsonObject.data[item][0][0], value === 'true' ? 1 : 0]]
+                })
+              }
+            }
           }
+          this.$nextTick(() => {
+            const myChart = echarts.init(document.getElementById('line-chart'))
+            myChart.setOption(this.lineChartOption)
+          })
         } else if (jsonObject.subscriptionId === 1) {
           console.log(e.data)
         }
@@ -358,7 +486,6 @@ export default {
       this.websock.close()
     }
   }
-
 }
 </script>
 
@@ -377,6 +504,9 @@ body {
 .cancel-btn {
   position: absolute;
   right: 10px;
-  top: 12px;
+  top: 4px;
+}
+.el-icon-s-shop:hover {
+  cursor: pointer;
 }
 </style>

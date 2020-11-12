@@ -71,7 +71,7 @@ export const constantRoutes = [
       {
         path: '',
         name: 'DeviceManage',
-        component: () => import('@/views/deviceManage/test'),
+        component: () => import('@/views/deviceManage/index'),
         meta: { title: '设备管理', icon: 'tree' }
       }
     ]
@@ -118,18 +118,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/netManage2',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        name: 'NetManage2',
-        component: () => import('@/views/dashboard/index'),
-        meta: { title: '网络管理', icon: 'link' }
-      }
-    ]
-  },
-  {
     path: '/dataManage',
     component: Layout,
     children: [
@@ -161,7 +149,7 @@ export const constantRoutes = [
       {
         path: '',
         name: 'Form',
-        component: () => import('@/views/audit/index1'),
+        component: () => import('@/views/audit/index'),
         meta: { title: '审计日记', icon: 'form' }
       }
     ]

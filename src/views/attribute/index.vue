@@ -81,6 +81,95 @@
 
       </el-dialog>
     </div>
+    <div class="settings">
+
+      <el-row :gutter="20">
+        <el-col :span="3"
+                :offset="2">
+          <h4>用户访问控制属性</h4>
+        </el-col>
+        <el-col :span="1"
+                :offset="6">
+          <el-button type="success"
+                     icon="el-icon-plus"
+                     circle
+                     @click="dialogAttrVisible = true"></el-button>
+          <!-- @click="handleEdit(scope.$index, scope.row)" -->
+        </el-col>
+        <el-col :span="1">
+          <el-button type="info"
+                     icon="el-icon-refresh-right"
+                     circle></el-button>
+          <!-- @click="handleEdit(scope.$index, scope.row)" -->
+        </el-col>
+        <el-col :span="1"
+                v-show="this.multipleSelection.length !=0">
+          <el-button type="danger"
+                     icon="el-icon-delete"
+                     circle></el-button>
+          <!-- @click="handleEdit(scope.$index, scope.row)" -->
+        </el-col>
+
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12"
+                :offset="2">
+          <el-table :data="attrTableData"
+                    @selection-change="handleSelectionChange"
+                    style="width: 100%">
+            <el-table-column type="selection"
+                             width="55">
+            </el-table-column>
+            <el-table-column prop="date"
+                             label="日期"
+                             sortable
+                             width="200px">
+            </el-table-column>
+            <el-table-column prop="key"
+                             label="属性名"
+                             sortable
+                             width="200px">
+            </el-table-column>
+            <el-table-column prop="value"
+                             sortable
+                             label="属性值">
+            </el-table-column>
+            <el-table-column align="right">
+              <template slot-scope="scope">
+                <el-button type="text"
+                           icon="el-icon-edit"
+                           @click="handleEdit(scope.$index, scope.row)">
+
+                </el-button>
+
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+
+      <el-dialog title="添加属性信息"
+                 :visible.sync="dialogAttrVisible"
+                 width="30%">
+        <el-form :model="attrMap"
+                 label-width="100px">
+          <el-form-item label="属性名称">
+            <el-input v-model="attrMap.key"
+                      autocomplete="off"></el-input>
+          </el-form-item>
+
+        </el-form>
+        <div slot="footer"
+             class="dialog-footer">
+          <el-button @click="dialogAttrVisible = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="dialogAttrVisible = false">确 定</el-button>
+        </div>
+      </el-dialog>
+
+    </div>
+
   </div>
 </template>
 
@@ -123,7 +212,15 @@ export default {
         this.userInfoDetail.lastname = res.lastName
         this.userInfoDetail.last = moment(JSON.parse(res.additionalInfo.lastLoginTs)).format('YYYY-MM-DD hh:mm:ss')
       })
+    },
+    handleEdit(index, row) {
+      console.log(index, row)
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+      console.log(this.multipleSelection.length)
     }
+
   },
   computed: {
     ...mapGetters(['name'])
@@ -188,7 +285,41 @@ export default {
         type: [],
         resource: '',
         desc: ''
-      }
+      },
+      dialogAttrVisible: false,
+      attrMap: {
+        key: '',
+        type: '',
+        value: ''
+
+      },
+      multipleSelection: '',
+
+      attrTableData: [{
+        date: '2016-05-02',
+        key: '王小虎',
+        value: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-02',
+        key: '王小虎',
+        value: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-02',
+        key: '王小虎',
+        value: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-02',
+        key: '王小虎',
+        value: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-02',
+        key: '王小虎',
+        value: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-02',
+        key: '王小虎',
+        value: '上海市普陀区金沙江路 1518 弄'
+      }],
     }
   }
 }

@@ -14,9 +14,8 @@ export function getAllProtoPluginName() {
 }
 export function deleteProtoPluginByName(data) {
   return request({
-    url: '/api/proto/handle/plugin/del?name=',
-    method: 'DELETE',
-    data
+    url: '/api/proto/handle/plugin/del?name=' + data,
+    method: 'DELETE'
   })
 }
 export function uploadProtoPlugin(data) {

@@ -14,9 +14,12 @@ export function postDeviceCredentialsByDeviceId(params) {
     params
   })
 }
-
-export function webSocketAPI(entityType, entityId) {
-
+export function transformDeviceStatus(entityType, entityId, params) {
+  return request({
+    url: '/api/' + entityType + '/' + entityId + '/plugin/exec',
+    method: 'post',
+    params
+  })
 }
 
 export function initWebSocket() {
@@ -54,3 +57,18 @@ export function postDeviceShortStatus(deviceId, params) {
     data: params
   })
 }
+
+export function getDeviceTransportCondition(deviceId) {
+  return request({
+    url: '/api/device/getTransportCondition/' + deviceId,
+    method: 'get'
+  })
+}
+export function postDeviceTransportCondition(deviceId, params) {
+  return request({
+    url: '/api/device/editTransportCondition/' + deviceId,
+    method: 'post',
+    data: params
+  })
+}
+

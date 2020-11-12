@@ -144,7 +144,6 @@
         <div v-infinite-scroll="load">
           <el-table :data="tableData5"
                     v-el-table-infinite-scroll="load"
-                    height="550"
                     style="width: 100%;float:left;overflow:auto">
             <el-table-column class-name="tt"
                              label="Signatures"

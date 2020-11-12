@@ -106,7 +106,6 @@ export default {
     },
     handleDetail(index, row) {
       this.auditDetail = JSON.stringify(row, null, 2)
-      console.log(row)
       this.auditDetailVisible = true
     }
 

@@ -79,8 +79,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'tenant@thingsboard.org',
-        password: 'tenant'
+        username: 'siasec@sia.org',
+        password: '123456'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
